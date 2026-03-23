@@ -115,13 +115,16 @@ def crear_producto():
             continue
 
 def mostrar_restauraciones(catalogo: Catalogo) -> None:
-        encontradas = False
+        organizadas = []
         for obra in catalogo._obras:
-            if obra.restauraciones:
-                encontradas = True
-                for restauracion in obra.restauraciones:
-                    print(restauracion)
-        if not encontradas:
+            for restauracion in obra.restauraciones:
+                organizadas.append(restauracion)
+
+        if organizadas:
+            organizadas.sort(key=lambda r: r.fecha_inicio) # type: ignore
+            for restauracion in organizadas:
+                print(restauracion)
+        else:
             print("\nNo hay obras en restauración.")
 
 def mostrar_cesiones(catalogo: Catalogo) -> None:
