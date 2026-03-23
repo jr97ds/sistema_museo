@@ -1,14 +1,14 @@
 from abc import ABC
-from datetime import datetime
+from datetime import date
 
 class Obra(ABC):
     def __init__(self, nombre : str, autor : str, periodo : str,
-                  valoracion : int, fecha_creacion : datetime, 
-                  fecha_entrada : datetime):
+                  valor : int, fecha_creacion : date, 
+                  fecha_entrada : date ):
         self._nombre = nombre
         self._autor = autor
         self._periodo = periodo
-        self._valoracion = valoracion
+        self._valor =  valor
         self._fecha_creacion = fecha_creacion
         self._fecha_entrada = fecha_entrada
         self._estado = "En exhibición"
@@ -18,17 +18,21 @@ class Obra(ABC):
     def __str__(self) -> str:
         return (
         f"Nombre: {self._nombre}, Autor: {self._autor},"
-        f"Periodo: {self._periodo}, Valoración: {self._valoracion},"
-        f"Estado: {self._estado} , Fecha de Creación: {self._fecha_creacion.date()}, "
-        f"Fecha de Entrada: {self._fecha_entrada.date()}"
+        f"Periodo: {self._periodo}, Valor: {self._valor},"
+        f"Estado: {self._estado} , Fecha de Creación: {self._fecha_creacion}, "
+        f"Fecha de Entrada: {self._fecha_entrada}"
         )
+    
+    @property
+    def restauraciones(self):
+        return self._restauraciones
 
 class Cuadro(Obra):
     def __init__(self, nombre : str, autor : str, periodo : str,
-                 valoracion : int, fecha_creacion : datetime, 
-                 fecha_entrada : datetime, tecnica : str , 
+                 valor : int, fecha_creacion : date, 
+                 fecha_entrada : date, tecnica : str , 
                  estilo : str ):
-        super().__init__(nombre, autor, periodo, valoracion, 
+        super().__init__(nombre, autor, periodo, valor, 
                          fecha_creacion, fecha_entrada)
         self._tecnica = tecnica
         self._estilo = estilo
@@ -41,10 +45,10 @@ class Cuadro(Obra):
 
 class Escultura(Obra):
     def __init__(self, nombre : str, autor : str, periodo : str,
-                 valoracion : int, fecha_creacion : datetime, 
-                 fecha_entrada : datetime, material : str , 
+                 valor : int, fecha_creacion : date, 
+                 fecha_entrada : date, material : str , 
                  estilo : str ):
-        super().__init__(nombre, autor, periodo, valoracion, 
+        super().__init__(nombre, autor, periodo, valor, 
                          fecha_creacion, fecha_entrada)
         self._material = material
         self._estilo = estilo
@@ -57,7 +61,7 @@ class Escultura(Obra):
 
 class Otro(Obra):
     def __init__(self, nombre : str, autor : str, periodo : str,
-                 valoracion : int, fecha_creacion : datetime, 
-                 fecha_entrada : datetime):
-        super().__init__(nombre, autor, periodo, valoracion, 
+                 valor : int, fecha_creacion : date, 
+                 fecha_entrada : date):
+        super().__init__(nombre, autor, periodo, valor, 
                          fecha_creacion, fecha_entrada)

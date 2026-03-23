@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, date
 
 from obras import Cuadro, Escultura, Otro
 from catalogo import Catalogo
@@ -16,8 +16,8 @@ empleados = [encargado_catalogo, restaurador_jefe, director_museo]
 cuadro1 = Cuadro("La Mona Lisa", "Leonardo da Vinci", "Renacimiento", 100,
                  datetime(1503, 1, 1), datetime(1912, 1, 1), # type: ignore
                  "Óleo sobre tabla", "Renacimiento")    
-cuadro2 = Cuadro("La Noche Estrellada", "Vincent van Gogh", "Postimpresionismo", 9,
-                 datetime(1889, 1, 1), datetime(1956, 1, 1), # type: ignore
+cuadro2 = Cuadro("La Noche Estrellada", "Vincent van Gogh", "Postimpresionismo"
+                , 9, datetime(1889, 1, 1), datetime(1956, 1, 1), # type: ignore
                  "Óleo sobre lienzo", "Postimpresionismo")
 escultura1 = Escultura("La Piedad", "Miguel Ángel", "Renacimiento", 100,
                      datetime(1498, 1, 1), datetime(1999, 1, 1), # type: ignore
@@ -52,10 +52,72 @@ def log_out() -> bool:
     print("\nSesión cerrada. ¡Hasta luego!")
     return login
     
-def seleccion_opccion() -> str:
+def seleccion_opcion() -> str:
     opcion = input("\nSeleccione una opción: ")
     return opcion
 
+def crear_producto():
+    while True:
+        print("\n¿Qué tipo de obra desea agregar?")
+        print("1. Cuadro")
+        print("2. Escultura")   
+        print("3. Otro")
+        tipo_obra = seleccion_opcion()
+
+    
+        if tipo_obra == "1":
+            nombre = input("Nombre del cuadro: ")
+            autor = input("Autor del cuadro: ")
+            periodo = input("Periodo del cuadro: ")
+            valoracion = int(input("Valor: "))
+            fecha_creacion = date.fromisoformat(input(
+                "Fecha de creación (YYYY-MM-DD): "))
+            fecha_entrada = date.today() # Fecha actual
+            tecnica = input("Técnica del cuadro: ")
+            estilo = input("Estilo del cuadro: ")
+            nuevo_cuadro = Cuadro(nombre, autor, periodo, valoracion, 
+                                fecha_creacion, fecha_entrada, tecnica, estilo)
+            return nuevo_cuadro
+    
+        elif tipo_obra == "2":
+            nombre = input("Nombre de la escultura: ")
+            autor = input("Autor de la escultura: ")
+            periodo = input("Periodo de la escultura: ")
+            valoracion = int(input("Valor: "))
+            fecha_creacion = date.fromisoformat(input(
+                "Fecha de creación (YYYY-MM-DD): "))
+            fecha_entrada = date.today() # Fecha actual
+            material = input("Material de la escultura: ")
+            estilo = input("Estilo de la escultura: ")
+            nueva_escultura = Escultura(nombre, autor, periodo, valoracion, 
+                                        fecha_creacion, fecha_entrada, 
+                                        material, estilo)
+            return nueva_escultura
+        
+        elif tipo_obra == "3":
+            nombre = input("Nombre de la obra: ")
+            autor = input("Autor de la obra: ")
+            periodo = input("Periodo de la obra: ")
+            valoracion = int(input("Valor: "))
+            fecha_creacion = date.fromisoformat(input(
+                "Fecha de creación (YYYY-MM-DD): "))
+            fecha_entrada = date.today() # Fecha actual
+            nueva_obra = Otro(nombre, autor, periodo, valoracion, 
+                            fecha_creacion, fecha_entrada)
+            return nueva_obra
+        else:
+            no_valido()
+            continue
+
+def mostrar_restauraciones(catalogo: Catalogo) -> None:
+        encontradas = False
+        for obra in catalogo._obras:
+            if obra.restauraciones is not None:
+                encontradas = True
+                for restauracion in obra.restauraciones:
+                    print(restauracion)
+        if not encontradas:
+            print("\nNo hay obras en restauración.")
 
 
 # -------- INICIO DEL PROGRAMA --------
@@ -63,7 +125,7 @@ def seleccion_opccion() -> str:
 # Logica de seleccion de visitante/Empleado
 while True:
     mostrar_menu_principal()
-    opcion = seleccion_opccion()
+    opcion = seleccion_opcion()
     
     # Ruta para visitantes
     if opcion == "1":
@@ -78,30 +140,62 @@ while True:
         while not login:
             empleado_actual , login = log_in()
 
+        # Ruta para encargado del catalogo
         if empleado_actual.cargo == "Encargado del Catálogo": #type: ignore
             while True:
                 print("\n¿Qué desea hacer?")
                 print("1. Ver catálogo")
                 print("2. Agregar obra al catálogo")
                 print("0. Cerrar sesión")
-
-                opcion_empleado_catalogo = seleccion_opccion()
-
+                opcion_empleado_catalogo = seleccion_opcion()
+                # Mostrar Catalogo
                 if opcion_empleado_catalogo == "1":
-                    catalogo.mostrar_catalogo()
+                    catalogo.mostrar_obras()
                     continue
-
+                # Agregar Producto
                 elif opcion_empleado_catalogo == "2":
-                    pass # OJO PENDIENTE -----------
+                    nueva_obra = crear_producto()
+                    catalogo.agregar_obra(nueva_obra)
+                    print("\nObra agregada al catálogo:")
+                    print(nueva_obra)
+                    continue 
+                # Cerrar Sesión de Empleado
                 elif opcion_empleado_catalogo == "0":    
                     login = log_out()
                     break
                 else:
                     no_valido()
 
+        # Ruta para restaurador jefe
+        elif empleado_actual.cargo == "Restaurador Jefe":# type: ignore
+              while True:
+                print("\n¿Qué desea hacer?")
+                print("1. Ver obras en exhibición")
+                print("2. Ver restauraciónes")
+                print("3. Enviar obra a restauración")
+                print("4. Marcar obra como restaurada")
+                print("0. Cerrar sesión")
+                opcion_empleado_restauracion = seleccion_opcion()
+                # Mostrar Obras en Exhibición
+                if opcion_empleado_restauracion == "1":
+                    catalogo.mostrar_obras_exhibicion() #type: ignore
+                    continue
+                # Mostrar Restauraciones
+                elif opcion_empleado_restauracion == "2":
+                    mostrar_restauraciones(catalogo) #type: ignore
+                    continue
+                # Enviar obra a restauración
+                elif opcion_empleado_restauracion == "3":
+                    pass
+                # Marcar obra como restaurada
+                elif opcion_empleado_restauracion == "4":
+                    pass
+                else:
+                    no_valido()
+                    continue
 
-        elif empleado_actual.cargo == "Restaurador Jefe":
-            pass # OJO PENDIENTE -----------
+
+
         elif empleado_actual.cargo == "Director del Museo":
             pass # OJO PENDIENTE -----------
         
