@@ -1,4 +1,7 @@
-class UsuarioRegistrado:
+from abc import ABC
+
+
+class UsuarioRegistrado(ABC):
     def __init__(self, nombre, apellido, usuario, contraseña):
         self.nombre = nombre
         self.apellido = apellido
