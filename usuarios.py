@@ -1,5 +1,5 @@
 from abc import ABC
-from datetime import date
+from datetime import date, timedelta
 
 from tramites import Cesion, Restauracion
 
@@ -64,12 +64,14 @@ class DirectorMuseo(Empleado):
         super().__init__(nombre, apellido, usuario, contraseña)
         self._cargo = "Director del Museo"
 
-    def crear_cesion(self, obra, museo_externo, importe, fecha_fin) -> None:
-        cesion = Cesion(obra, date.today(), museo_externo, importe, fecha_fin)
+    def crear_cesion(self, obra, museo_externo, importe, duracion_dias) -> Cesion:
+        cesion = Cesion(obra, duracion_dias, museo_externo, importe)
         if obra.estado == "En exhibición":
-            cesion.estado = "Aprobada"
+            cesion.estado = "Aprobada" # type: ignore
+            cesion.fecha_inicio = date.today() # type: ignore
+            cesion.fecha_fin = date.today() + timedelta(days=duracion_dias) # type: ignore
             obra.estado = "En cesión"
-        else:
-            obra.cesiones.append(cesion)
+        obra.cesiones.append(cesion)
+        return cesion
 
 

@@ -289,7 +289,27 @@ while True:
                     continue
                 #Crear nueva cesion
                 elif opcion_empleado_director == "3":
-                    pass
+                    while True:
+                        input_titulo = input("\nIngrese el título de la obra para la cesión: ")
+                        obra = catalogo.buscar_obra(input_titulo)
+                        if not obra:
+                            print(f"\nObra '{input_titulo}' no encontrada.")
+                            continue
+                        input_museo = input("\nIngrese el nombre del museo externo para la cesión: ")
+                        for museo in museos_externos:
+                            if museo._nombre.lower() == input_museo.lower():
+                                museo_externo = museo
+                                break
+                        else:
+                            print(f"\nMuseo externo '{input_museo}' no encontrado.")
+                            continue
+
+                        importe = int(input("\nIngrese el importe de la cesión: "))
+                        duracion_dias = int(input("\nIngrese la duración de la cesión en días: "))
+                        cesion = empleado_actual.crear_cesion(obra, museo_externo, importe, duracion_dias) # type: ignore
+                        print(f"\nCesión creada: {cesion}") # type: ignore
+                        break
+
                 elif opcion_empleado_director == "0":
                     login = log_out()
                     break
