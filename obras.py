@@ -26,6 +26,18 @@ class Obra(ABC):
     @property
     def restauraciones(self):
         return self._restauraciones
+    
+    @property
+    def valor(self):
+        return self._valor
+    
+    @property
+    def titulo(self):
+        return self._nombre
+    
+    @property
+    def cesiones(self):
+        return self._cesiones
 
 class Cuadro(Obra):
     def __init__(self, nombre : str, autor : str, periodo : str,

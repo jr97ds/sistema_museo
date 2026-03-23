@@ -112,7 +112,7 @@ def crear_producto():
 def mostrar_restauraciones(catalogo: Catalogo) -> None:
         encontradas = False
         for obra in catalogo._obras:
-            if obra.restauraciones is not None:
+            if obra.restauraciones:
                 encontradas = True
                 for restauracion in obra.restauraciones:
                     print(restauracion)
@@ -173,12 +173,12 @@ while True:
                 print("1. Ver obras en exhibición")
                 print("2. Ver restauraciónes")
                 print("3. Enviar obra a restauración")
-                print("4. Marcar obra como restaurada")
+                print("4. Finalizar restauración")
                 print("0. Cerrar sesión")
                 opcion_empleado_restauracion = seleccion_opcion()
                 # Mostrar Obras en Exhibición
                 if opcion_empleado_restauracion == "1":
-                    catalogo.mostrar_obras_exhibicion() #type: ignore
+                    catalogo.mostrar_obras() #type: ignore
                     continue
                 # Mostrar Restauraciones
                 elif opcion_empleado_restauracion == "2":
@@ -186,10 +186,27 @@ while True:
                     continue
                 # Enviar obra a restauración
                 elif opcion_empleado_restauracion == "3":
-                    pass
+                    while True:
+                        titulo_obra = input(
+                            "\nIngrese el título de la obra a restaurar: "
+                            )
+                        obra_a_restaurar = catalogo.buscar_obra(titulo_obra)
+                        
+                        #type: ignore
+                        if obra_a_restaurar:
+                            tipo_restauracion = input(
+                            "Ingrese el tipo de restauración: "
+                            )
+                            empleado_actual.enviar_a_restauracion(obra_a_restaurar, #type: ignore
+                                                                tipo_restauracion) 
+                            print(f"\nObra '{obra_a_restaurar.titulo}' enviada a restauración.")
+                            break
+                        else:
+                            print(f"\nObra '{titulo_obra}' no encontrada en exhibición.")
+                            continue
                 # Marcar obra como restaurada
                 elif opcion_empleado_restauracion == "4":
-                    pass
+                    pass # OJO PENDIENTE
                 else:
                     no_valido()
                     continue

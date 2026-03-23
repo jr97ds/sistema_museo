@@ -1,4 +1,7 @@
 from abc import ABC
+from datetime import date
+
+from tramites import Restauracion
 
 
 class UsuarioRegistrado(ABC):
@@ -35,13 +38,17 @@ class EncargadoCatalogo(Empleado):
                  usuario : str, contraseña : str):
         super().__init__(nombre, apellido, usuario, contraseña)
         self._cargo = "Encargado del Catálogo"
-
-
+        
 class RestauradorJefe(Empleado):
     def __init__(self, nombre : str, apellido : str, 
                  usuario : str, contraseña : str):
         super().__init__(nombre, apellido, usuario, contraseña)
         self._cargo = "Restaurador Jefe"
+
+    def enviar_a_restauracion(self, obra, tipo_restauracion):
+        restauracion = Restauracion(obra, date.today(), tipo_restauracion)
+        obra.restauraciones.append(restauracion)
+        obra.estado = "En restauración"
 
 class DirectorMuseo(Empleado):
     def __init__(self, nombre : str, apellido : str, 
