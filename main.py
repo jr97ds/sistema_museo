@@ -192,15 +192,21 @@ while True:
                             )
                         obra_a_restaurar = catalogo.buscar_obra(titulo_obra)
                         
-                        #type: ignore
+                        
                         if obra_a_restaurar:
-                            tipo_restauracion = input(
-                            "Ingrese el tipo de restauración: "
-                            )
-                            empleado_actual.enviar_a_restauracion(obra_a_restaurar, #type: ignore
-                                                                tipo_restauracion) 
-                            print(f"\nObra '{obra_a_restaurar.titulo}' enviada a restauración.")
-                            break
+                            # Si ya esta en restauración, no se puede enviar de nuevo
+                            if obra_a_restaurar.estado = = "En restauración": # type: ignore
+                                print(f"\nLa obra '{obra_a_restaurar.titulo}' ya está en restauración.")
+                                break
+                            # Ruta para enviar obra a restuarar
+                            else:
+                                tipo_restauracion = input(
+                                "Ingrese el tipo de restauración: "
+                                )
+                                empleado_actual.enviar_a_restauracion(obra_a_restaurar, #type: ignore
+                                                                    tipo_restauracion) 
+                                print(f"\nObra '{obra_a_restaurar.titulo}' enviada a restauración.")
+                                break
                         else:
                             print(f"\nObra '{titulo_obra}' no encontrada en exhibición.")
                             continue
