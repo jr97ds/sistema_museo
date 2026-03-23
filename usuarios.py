@@ -8,30 +8,46 @@ class UsuarioRegistrado(ABC):
         self._usuario = usuario
         self._contraseña = contraseña
 
-    def mostrar_nombre_completo(self) -> None:
-        print(f"Nombre: {self._nombre} {self._apellido}")
+    @property
+    def usuario(self):
+        return self._usuario
+    @property
+    def contraseña(self):
+        return self._contraseña
+    @property
+    def nombre_completo(self):
+        return f"{self._nombre} {self._apellido}"
+    
 
 class Empleado(UsuarioRegistrado):
     def __init__(self, nombre : str, apellido : str, 
-                 usuario : str, contraseña : str, cargo : str):
+                 usuario : str, contraseña : str):
         super().__init__(nombre, apellido, usuario, contraseña)
-        self._cargo = cargo
+        self._cargo = None
 
-class EncargadoCatalogo(UsuarioRegistrado):
+    @property
+    def cargo(self):
+        return self._cargo
+    
+
+class EncargadoCatalogo(Empleado):
     def __init__(self, nombre : str, apellido : str, 
                  usuario : str, contraseña : str):
         super().__init__(nombre, apellido, usuario, contraseña)
+        self._cargo = "Encargado del Catálogo"
 
 
-class RestauradorJefe(UsuarioRegistrado):
+class RestauradorJefe(Empleado):
     def __init__(self, nombre : str, apellido : str, 
                  usuario : str, contraseña : str):
         super().__init__(nombre, apellido, usuario, contraseña)
+        self._cargo = "Restaurador Jefe"
 
-class DirectorMuseo(UsuarioRegistrado):
+class DirectorMuseo(Empleado):
     def __init__(self, nombre : str, apellido : str, 
                  usuario : str, contraseña : str):
         super().__init__(nombre, apellido, usuario, contraseña)
+        self._cargo = "Director del Museo"
 
 class Autenticacion:
     def __init__(self, usuario, contraseña):
