@@ -45,10 +45,18 @@ class RestauradorJefe(Empleado):
         super().__init__(nombre, apellido, usuario, contraseña)
         self._cargo = "Restaurador Jefe"
 
-    def enviar_a_restauracion(self, obra, tipo_restauracion):
+    def enviar_a_restauracion(self, obra, tipo_restauracion) -> None:
         restauracion = Restauracion(obra, date.today(), tipo_restauracion)
         obra.restauraciones.append(restauracion)
         obra.estado = "En restauración"
+    
+    def finalizar_restauracion(self, obra) -> None:
+        for restauracion in obra.restauraciones:
+            if restauracion._estado == "En proceso":
+                restauracion._estado = "Finalizada"
+                restauracion._fecha_fin = date.today()
+                obra.estado = "En exhibición"
+                return
 
 class DirectorMuseo(Empleado):
     def __init__(self, nombre : str, apellido : str, 

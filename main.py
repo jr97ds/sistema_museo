@@ -191,11 +191,10 @@ while True:
                             "\nIngrese el título de la obra a restaurar: "
                             )
                         obra_a_restaurar = catalogo.buscar_obra(titulo_obra)
-                        
-                        
+                    
                         if obra_a_restaurar:
                             # Si ya esta en restauración, no se puede enviar de nuevo
-                            if obra_a_restaurar.estado = = "En restauración": # type: ignore
+                            if obra_a_restaurar.estado == "En restauración": # type: ignore
                                 print(f"\nLa obra '{obra_a_restaurar.titulo}' ya está en restauración.")
                                 break
                             # Ruta para enviar obra a restuarar
@@ -210,9 +209,26 @@ while True:
                         else:
                             print(f"\nObra '{titulo_obra}' no encontrada en exhibición.")
                             continue
+                        
                 # Marcar obra como restaurada
                 elif opcion_empleado_restauracion == "4":
-                    pass # OJO PENDIENTE
+                    while True:
+                        titulo_obra = input(
+                            "\nIngrese el título de la obra a finalizar: "
+                            )
+                        obra_a_finalizar = catalogo.buscar_obra(titulo_obra)
+                        
+                        if obra_a_finalizar:
+                            if obra_a_finalizar.estado == "En restauración": # type: ignore
+                                empleado_actual.finalizar_restauracion(obra_a_finalizar) # type: ignore
+                                print(f"\nLa restauracion de la obra '{obra_a_finalizar.titulo}' fue finalizada.") # type: ignore
+                                break
+                            else:
+                                print(f"\nLa obra '{obra_a_finalizar.titulo}' no está en restauración.") # type: ignore
+                                break
+                        else:
+                                print(f"\nObra '{titulo_obra}' no encontrada") # type: ignore
+                                continue  
                 else:
                     no_valido()
                     continue

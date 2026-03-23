@@ -38,6 +38,14 @@ class Obra(ABC):
     @property
     def cesiones(self):
         return self._cesiones
+    
+    @property
+    def estado(self):
+        return self._estado
+    
+    @estado.setter
+    def estado(self, nuevo_estado):
+        self._estado = nuevo_estado
 
 class Cuadro(Obra):
     def __init__(self, nombre : str, autor : str, periodo : str,
