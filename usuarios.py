@@ -1,7 +1,7 @@
 from abc import ABC
 from datetime import date
 
-from tramites import Restauracion
+from tramites import Cesion, Restauracion
 
 
 class UsuarioRegistrado(ABC):
@@ -64,10 +64,12 @@ class DirectorMuseo(Empleado):
         super().__init__(nombre, apellido, usuario, contraseña)
         self._cargo = "Director del Museo"
 
-class Autenticacion:
-    def __init__(self, usuario, contraseña):
-        self._usuario = usuario
-        self._contraseña = contraseña
-
+    def crear_cesion(self, obra, museo_externo, importe, fecha_fin) -> None:
+        cesion = Cesion(obra, date.today(), museo_externo, importe, fecha_fin)
+        if obra.estado == "En exhibición":
+            cesion.estado = "Aprobada"
+            obra.estado = "En cesión"
+        else:
+            obra.cesiones.append(cesion)
 
 

@@ -27,10 +27,29 @@ class Cesion(Tramite):
                  museo_externo : MuseoExterno, importe : int , 
                  fecha_fin : date):
         super().__init__(obra, fecha_inicio)
-        self._estado = "En Revisión"
+        self._estado = "Pendiente"
         self._museo_externo = museo_externo
         self._importe = importe
         self._fecha_fin = fecha_fin
+    
+    @property
+    def museo_externo(self):
+        return self._museo_externo
+    
+    @property
+    def estado(self):
+        return self._estado
+    
+    @property
+    def fecha_fin(self):
+        return self._fecha_fin
+    
+    def __str__(self) -> str:
+        return (f"Cesión de '{self._obra.titulo}' - Museo: "
+                f"{self._museo_externo._nombre} - Importe: "
+                f"${self._importe} - Estado: {self._estado} - "
+                f"Fecha Inicio: {self._fecha_inicio} - Fecha Fin: "
+                f"{self._fecha_fin}")
 
 class MuseoExterno():
     def __init__(self, nombre : str):

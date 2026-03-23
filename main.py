@@ -2,6 +2,7 @@ from datetime import datetime, date
 
 from obras import Cuadro, Escultura, Otro
 from catalogo import Catalogo
+from tramites import MuseoExterno
 from usuarios import EncargadoCatalogo , RestauradorJefe , DirectorMuseo
 
 login = False # Controla el estado de inicio de sesión
@@ -11,6 +12,11 @@ encargado_catalogo = EncargadoCatalogo("Andres", "Gomez", "catalogo", "1234")
 restaurador_jefe = RestauradorJefe("Maria", "Lopez", "restaurador", "1234")
 director_museo = DirectorMuseo("Carlos", "Perez", "director", "1234")
 empleados = [encargado_catalogo, restaurador_jefe, director_museo]
+
+museo1 = MuseoExterno("Museo de Arte Moderno")
+museo2 = MuseoExterno("Museo Nacional de Bellas Artes")
+museo3 = MuseoExterno("Museo de Arte Contemporáneo")
+museos_externos = [museo1, museo2, museo3]
 
 # Datos precargados de obras para demostración
 cuadro1 = Cuadro("La Mona Lisa", "Leonardo da Vinci", "Renacimiento", 100,
@@ -24,7 +30,6 @@ escultura1 = Escultura("La Piedad", "Miguel Ángel", "Renacimiento", 100,
                      "Mármol", "Renacimiento")
 otro = Otro("Otra Obra", "Desconocido", "Contemporáneo", 700,
              datetime(2000, 1, 1), datetime(2005, 1, 1)) # type: ignore
-
 catalogo =Catalogo([cuadro1, cuadro2, escultura1, otro])
 
 def mostrar_menu_principal() -> None:
@@ -119,8 +124,33 @@ def mostrar_restauraciones(catalogo: Catalogo) -> None:
         if not encontradas:
             print("\nNo hay obras en restauración.")
 
+def mostrar_cesiones(catalogo: Catalogo) -> None:
+        encontradas = False
+        for obra in catalogo._obras:
+            if obra.cesiones:
+                encontradas = True
+                for cesion in obra.cesiones:
+                    print(cesion)
+        if not encontradas:
+            print("\nNo hay obras en cesión.")
+
+def verificar_cesiones_vencidas(catalogo: Catalogo) -> None:
+    hoy = date.today()
+    for obra in catalogo.obras:
+        for cesion in obra.cesiones:
+            if cesion._estado == "Aprobada" and cesion.fecha_fin < hoy:
+                cesion.estado = "Finalizada" # type: ignore
+                obra.estado = "En exhibición"
+        for cesion_pendiente in obra.cesiones:
+            if cesion_pendiente.estado == "Pendiente":
+                cesion_pendiente.estado = "Aprobada" # type: ignore
+                obra.estado = "En cesión"
 
 # -------- INICIO DEL PROGRAMA --------
+
+# Procesos Diarios
+verificar_cesiones_vencidas(catalogo) 
+
 
 # Logica de seleccion de visitante/Empleado
 while True:
@@ -210,6 +240,7 @@ while True:
                             print(f"\nObra '{titulo_obra}' no encontrada en exhibición.")
                             continue
                         
+                        
                 # Marcar obra como restaurada
                 elif opcion_empleado_restauracion == "4":
                     while True:
@@ -229,14 +260,42 @@ while True:
                         else:
                                 print(f"\nObra '{titulo_obra}' no encontrada") # type: ignore
                                 continue  
+                        
+                elif opcion_empleado_restauracion == "0":
+                    login = log_out()
+                    break   
                 else:
                     no_valido()
                     continue
 
 
 
-        elif empleado_actual.cargo == "Director del Museo":
-            pass # OJO PENDIENTE -----------
+        elif empleado_actual.cargo == "Director del Museo": # type: ignore
+            while True:
+                print("\n¿Qué desea hacer?")
+                print("1. Ver valor total del catálogo")
+                print("2. Ver todas las cesiones")
+                print("3. Crear nueva cesión")
+                print("0. Cerrar sesión")
+                opcion_empleado_director = seleccion_opcion()
+                # Mostrar valor total del catálogo
+                if opcion_empleado_director == "1":
+                    valor_total = catalogo.calcular_valor_total() # type: ignore
+                    print(f"\nValor total del catálogo: ${valor_total}")
+                    continue
+                # Ver todas las cesiones
+                elif opcion_empleado_director == "2":
+                    mostrar_cesiones(catalogo) # type: ignore
+                    continue
+                #Crear nueva cesion
+                elif opcion_empleado_director == "3":
+                    pass
+                elif opcion_empleado_director == "0":
+                    login = log_out()
+                    break
+                else:
+                    no_valido()
+                    continue
         
     elif opcion == "0":
         print("Saliendo.")
