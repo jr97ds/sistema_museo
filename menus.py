@@ -147,13 +147,27 @@ class MenuRestauradorJefe(Menu):
                 self._mostrar_restauraciones(catalogo)
             # Enviar obra a restauración
             elif opcion_empleado_restauracion == "3":
-                self._enviar_a_restauracion(self._empleado, # type: ignore
-                                            catalogo) 
+                titulo = input(
+                    "\nIngrese el título de la obra a restaurar: "
+                    )
+                tipo = input(
+                    "\nIngrese el tipo de restauración (Automática o Manual): "
+                    )
+                exito, mensaje = self._empleado.enviar_a_restauracion( # type: ignore
+                    self._contexto["catalogo"], titulo, tipo
+                    ) 
+                print(f"\n{mensaje}")
+                
             # Marcar obra como restaurada
             elif opcion_empleado_restauracion == "4":
-                self._finalizar_restauracion(self._empleado, # type: ignore
-                                             catalogo) 
-                    
+                titulo_obra = input(
+                    "\nIngrese el título de la obra a finalizar: "
+                    )
+                exito, mensaje = self._empleado.finalizar_restauracion( # type: ignore
+                    self._contexto["catalogo"], titulo_obra
+                    )
+                print(f"\n{mensaje}")
+
             elif opcion_empleado_restauracion == "0":
                 break   
             else:
@@ -172,50 +186,7 @@ class MenuRestauradorJefe(Menu):
                 print(restauracion)
         else:
             print("\nNo hay obras en restauración.")
-
-    @staticmethod
-    def _enviar_a_restauracion(empleado: RestauradorJefe, 
-                               catalogo: Catalogo) -> None:
-        """Ruta para enviar obra a restaurar"""
-
-        titulo_obra = input("\nIngrese el título de la obra a restaurar: ")
-        obra_a_restaurar = catalogo.buscar_obra(titulo_obra)
-    
-        if not obra_a_restaurar:
-            print(f"\nObra '{titulo_obra}' no encontrada en exhibición.")
-            return
-        if obra_a_restaurar.estado == "En restauración":
-            print(f"\nLa obra '{obra_a_restaurar.titulo}'"
-                    f"ya está en restauración.")
-            return
-        tipo_restauracion = input("Ingrese el tipo de restauración: ")
-        empleado.enviar_a_restauracion(obra_a_restaurar,
-                                        tipo_restauracion) 
-        print(f"\nObra '{obra_a_restaurar.titulo}' enviada a restauración.")
-
-    @staticmethod
-    def _finalizar_restauracion(empleado: RestauradorJefe, 
-                                catalogo: Catalogo) -> None:
-        """Ruta para finalizar restauración de obra"""
-
-        titulo_obra = input(
-            "\nIngrese el título de la obra a finalizar: "
-            )
-        obra_a_finalizar = catalogo.buscar_obra(titulo_obra)
-        
-        if obra_a_finalizar:
-            if obra_a_finalizar.estado == "En restauración":
-                empleado.finalizar_restauracion(obra_a_finalizar)
-                print(f"\nLa restauracion de la obra "
-                      f"'{obra_a_finalizar.titulo}' fue finalizada.")
-                return
-            else:
-                print(f"\nLa obra '{obra_a_finalizar.titulo}'"
-                      f" no está en restauración.")
-                return
-        else:
-                print(f"\nObra '{titulo_obra}' no encontrada")
-                return  
+               
 
 
 class MenuDirectorMuseo(Menu):

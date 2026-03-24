@@ -1,5 +1,6 @@
 from abc import ABC
 from datetime import date, timedelta
+from catalogo import Catalogo
 from obras import Obra
 from tramites import Cesion, MuseoExterno, Restauracion
 
@@ -52,18 +53,37 @@ class RestauradorJefe(Empleado):
         super().__init__(nombre, apellido, usuario, contraseña)
         self._cargo = "Restaurador Jefe"
 
-    def enviar_a_restauracion(self, obra: Obra,
-                               tipo_restauracion: str) -> None:
-        restauracion = Restauracion(obra, date.today(), tipo_restauracion)
-        obra.agregar_restauracion(restauracion)
-        obra.estado = "En restauración"
-    
-    def finalizar_restauracion(self, obra: Obra) -> None:
-        for restauracion in obra.restauraciones:
-            if restauracion.estado == "En proceso":
-                restauracion.finalizar() 
-                obra.estado = "En exhibición"
-                return
+    def enviar_a_restauracion(self, catalogo: Catalogo, titulo: str,
+                               tipo_restauracion: str) -> tuple[bool, str]:
+        obra_a_restaurar = catalogo.buscar_obra(titulo)
+        if not obra_a_restaurar:
+            return (False, f"Obra '{titulo}' no encontrada en el catálogo.")
+        if obra_a_restaurar.estado == "En Restauración":
+            return (False, f"Obra '{titulo}' ya está en restauración.")
+        restauracion = Restauracion(obra_a_restaurar, date.today(), tipo_restauracion)
+        obra_a_restaurar.agregar_restauracion(restauracion)
+        obra_a_restaurar.estado = "En restauración"
+        return (True, f"Obra '{titulo}' enviada a restauración.")
+
+    def finalizar_restauracion(self, catalogo: Catalogo, 
+                               titulo: str) -> tuple[bool, str]:
+        obra_a_finalizar = catalogo.buscar_obra(titulo)
+        
+        if obra_a_finalizar:
+            if obra_a_finalizar.estado == "En restauración":
+                 for restauracion in obra_a_finalizar.restauraciones:
+                    if restauracion.estado == "En proceso":
+                        restauracion.finalizar() 
+                        obra_a_finalizar.estado = "En exhibición"
+                        return (True, f"Restauración de "
+                                f"'{obra_a_finalizar.titulo}' finalizada.")
+            else:
+                return (False, f"Obra '{obra_a_finalizar.titulo}' "
+                        f"no está en restauración.")
+        else:
+                return (False, f"Obra '{titulo}' no encontrada")
+
+       
 
 class DirectorMuseo(Empleado):
     """Clase para representar el director del museo"""

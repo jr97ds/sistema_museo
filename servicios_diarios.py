@@ -1,6 +1,7 @@
 from abc import ABC, abstractmethod
 from datetime import date, timedelta
 from catalogo import Catalogo
+import obras
 from usuarios import RestauradorJefe
 
 
@@ -46,7 +47,9 @@ class RestauracionesAutomaticas(ServicioDiario):
         for obra in catalogo.obras:
             if obra.estado == "En exhibición" and not obra.restauraciones:
                 if (hoy - obra.fecha_entrada).days >= 5 * 365:
-                    restaurador_jefe.enviar_a_restauracion(obra, "Automática")
+                    restaurador_jefe.enviar_a_restauracion(catalogo,
+                                                           obra.titulo, 
+                                                           "Automática")
             # Si se ha restaurado, pero la ultima restauracion fue hace 5 años
             elif obra.estado == "En exhibición" and obra.restauraciones:
                 restauraciones_finalizadas = [
@@ -54,5 +57,6 @@ class RestauracionesAutomaticas(ServicioDiario):
                 ]
                 ultima_restauracion = restauraciones_finalizadas[-1]
                 if (hoy - ultima_restauracion.fecha_fin).days >= 5 * 365:
-                    restaurador_jefe.enviar_a_restauracion(obra, 
-                                                            "Automática")
+                    restaurador_jefe.enviar_a_restauracion(catalogo, 
+                                                           obra.titulo, 
+                                                           "Automática")
