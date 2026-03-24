@@ -36,8 +36,8 @@ class Obra(ABC):
             return inicial
     
     @property
-    def restauraciones(self):
-        return self._restauraciones
+    def restauraciones(self) -> list:
+        return list(self._restauraciones)
     
     @property
     def valor(self):
