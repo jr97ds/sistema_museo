@@ -7,14 +7,9 @@ from obras import Cuadro, Escultura, Obra, Otro
 from tramites import MuseoExterno
 from usuarios import Empleado
 from usuarios import DirectorMuseo, EncargadoCatalogo, RestauradorJefe
+from utils import no_valido, seleccion_opcion
 
 
-def seleccion_opcion() -> str:
-    opcion = input("\nSeleccione una opción: ")
-    return opcion
-
-def no_valido() -> None:
-    print("\nOpción no válida. Por favor, elija una opción válida.")
 
 def asignar_sala(salas) -> Sala:
     for idx, sala in enumerate(salas):
@@ -26,7 +21,6 @@ def asignar_sala(salas) -> Sala:
             return sala_seleccionada
         else:
             print("\nOpción de sala no válida.")
-            continue
 
 class Menu(ABC):
     """Clase base para representar un menú en el sistema del museo."""
@@ -40,7 +34,7 @@ class Menu(ABC):
         pass
 
     @staticmethod
-    def crear_menu(empleado: Empleado, **kwargs) -> None:
+    def crear_menu(empleado: Empleado, **kwargs) -> "Menu":
         """Crea el menú adecuado según el tipo de empleado"""
 
         if isinstance(empleado, EncargadoCatalogo):
@@ -86,6 +80,9 @@ class MenuEncargadoCatalogo(Menu):
             print("2. Escultura")   
             print("3. Otro")
             tipo_obra = seleccion_opcion()
+            if tipo_obra not in ["1", "2", "3"]:
+                print("Opción no válida.")
+                continue
             nombre = input("Nombre del cuadro: ")
             autor = input("Autor del cuadro: ")
             periodo = input("Periodo del cuadro: ")
@@ -101,7 +98,6 @@ class MenuEncargadoCatalogo(Menu):
                 return None
 
             fecha_entrada = date.today() # Fecha actual
-
 
             if tipo_obra == "1":
                 tecnica = input("Técnica del cuadro: ")

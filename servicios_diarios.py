@@ -26,10 +26,11 @@ class VerificarCesionesVencidas(ServicioDiario):
                     cesion_pendiente.estado = "Aprobada"
                     obra.estado = "En cesión"
 
-# Restauracion si lleva 5 años sin restauracion, se hace de forma automatica
+    # Restauracion si lleva 5 años sin restauracion, se hace de forma automatica
 
-    def restauraciones_automaticas(catalogo: Catalogo, 
-                                restaurador_jefe: RestauradorJefe) -> None:
+class RestauracionesAutomaticas(ServicioDiario):
+
+    def ejecutar(self, catalogo: Catalogo, restaurador_jefe: RestauradorJefe) -> None:
         hoy = date.today()
         for obra in catalogo.obras:
             if obra.estado == "En exhibición" and not obra.restauraciones:
@@ -38,4 +39,5 @@ class VerificarCesionesVencidas(ServicioDiario):
             elif obra.estado == "En exhibición" and obra.restauraciones:
                     ultima_restauracion = obra.restauraciones[-1]
                     if (hoy - ultima_restauracion.fecha_fin).days >= 5 * 365:
-                        restaurador_jefe.enviar_a_restauracion(obra, "Automática")
+                        restaurador_jefe.enviar_a_restauracion(obra, 
+                                                               "Automática")
