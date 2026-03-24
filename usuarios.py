@@ -92,13 +92,28 @@ class DirectorMuseo(Empleado):
         super().__init__(nombre, apellido, usuario, contraseña)
         self._cargo = "Director del Museo"
 
-    def crear_cesion(self, obra: Obra, museo_externo: MuseoExterno,
-                      importe: int, duracion_dias: int) -> Cesion:
-        cesion = Cesion(obra, duracion_dias, museo_externo, importe)
+    def crear_cesion(self, catalogo: Catalogo, 
+                     titulo: str, 
+                     nombre_museo: str, 
+                     museos_externos: list[MuseoExterno], 
+                     importe: int, 
+                     duracion_dias: int) -> str:
+        
+        obra = catalogo.buscar_obra(titulo)
+        if not obra:
+            return  f"Obra '{titulo}' no encontrada."
+        museo_escogido = None
+        for m in museos_externos:
+            if m.nombre.lower() == nombre_museo.lower():
+                museo_escogido = m
+                break
+        if not museo_escogido:
+            return f"Museo externo '{nombre_museo}' no encontrado."
+        
+        cesion = Cesion(obra, duracion_dias, museo_escogido, importe)
         if obra.estado == "En exhibición":
             cesion.aprobar(date.today()) 
             obra.estado = "En cesión"
         obra.agregar_cesion(cesion)
-        return cesion
-
-
+        return f"Cesion creada para obra '{obra.nombre}'- Estado: '{cesion.estado}'."
+    

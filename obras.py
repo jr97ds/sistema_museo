@@ -34,6 +34,10 @@ class Obra(ABC):
             return inicial + ", " + extras
         else:
             return inicial
+        
+    @property
+    def nombre(self):
+        return self._nombre
     
     @property
     def restauraciones(self) -> list:

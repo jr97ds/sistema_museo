@@ -144,7 +144,13 @@ class MenuRestauradorJefe(Menu):
                 catalogo.mostrar_obras()
             # Mostrar Restauraciones
             elif opcion_empleado_restauracion == "2":
-                self._mostrar_restauraciones(catalogo)
+                restauraciones = self._contexto[
+                    "catalogo"].mostrar_restauraciones()
+                if restauraciones:
+                    for restauracion in restauraciones:
+                        print(restauracion)
+                else:
+                    print("\nNo hay restauraciones registradas.")
             # Enviar obra a restauración
             elif opcion_empleado_restauracion == "3":
                 titulo = input(
@@ -153,7 +159,7 @@ class MenuRestauradorJefe(Menu):
                 tipo = input(
                     "\nIngrese el tipo de restauración (Automática o Manual): "
                     )
-                exito, mensaje = self._empleado.enviar_a_restauracion( # type: ignore
+                x, mensaje = self._empleado.enviar_a_restauracion(# type: ignore
                     self._contexto["catalogo"], titulo, tipo
                     ) 
                 print(f"\n{mensaje}")
@@ -163,7 +169,7 @@ class MenuRestauradorJefe(Menu):
                 titulo_obra = input(
                     "\nIngrese el título de la obra a finalizar: "
                     )
-                exito, mensaje = self._empleado.finalizar_restauracion( # type: ignore
+                x, mensaje = self._empleado.finalizar_restauracion( # type: ignore
                     self._contexto["catalogo"], titulo_obra
                     )
                 print(f"\n{mensaje}")
@@ -172,22 +178,6 @@ class MenuRestauradorJefe(Menu):
                 break   
             else:
                 no_valido()
-
-    @staticmethod
-    def _mostrar_restauraciones(catalogo: Catalogo) -> None:
-        organizadas = []
-        for obra in catalogo.obras:
-            for restauracion in obra.restauraciones:
-                organizadas.append(restauracion)
-
-        if organizadas:
-            organizadas.sort(key=lambda r: r.fecha_inicio)
-            for restauracion in organizadas:
-                print(restauracion)
-        else:
-            print("\nNo hay obras en restauración.")
-               
-
 
 class MenuDirectorMuseo(Menu):
     """Clase para representar el menú del director del museo"""
@@ -211,69 +201,43 @@ class MenuDirectorMuseo(Menu):
                 
             # Ver todas las cesiones
             elif opcion_empleado_director == "2":
-                self._mostrar_cesiones(catalogo)
+                cesiones = self._contexto["catalogo"].mostrar_cesiones()
+                if cesiones:
+                    for cesion in cesiones:
+                        print(cesion)
+                else:
+                    print("\nNo hay cesiones registradas.")
                 
             #Crear nueva cesion
             elif opcion_empleado_director == "3":
-                self._crear_cesion(self._empleado, catalogo, # type: ignore
-                                    museos_externos) 
-
+                titulo = input(
+                    "\nIngrese el título de la obra para la cesión: "
+                    )
+                nombre_museo = input(
+                    "\nIngrese el nombre del museo externo: "
+                    )
+                try:
+                    importe = int(input("\nIngrese el importe de la cesión: "))
+                    duracion_dias = int(
+                        input("\nIngrese la duración de la cesión en días: ")
+                        )
+                except ValueError:
+                    print("\nValores invalidos. Por favor, " \
+                    f"ingrese números enteros.")
+                    return
+                mensaje = self._empleado.crear_cesion( # type: ignore
+                    self._contexto["catalogo"], titulo, nombre_museo,
+                    self._contexto["museos_externos"], importe, duracion_dias
+                )
+                print(f"\n{mensaje}")
             elif opcion_empleado_director == "0":
                 break
             else:
                 no_valido()
 
-
-    @staticmethod               
-    def _mostrar_cesiones(catalogo: Catalogo) -> None:
-        """Muestra todas las cesiones del catálogo 
-        ordenadas por fecha de inicio"""
-        encontradas = False
-        for obra in catalogo.obras:
-            if obra.cesiones:
-                encontradas = True
-                for cesion in obra.cesiones:
-                    print(cesion)
-        if not encontradas:
-            print("\nNo hay obras en cesión.")
     
-    @staticmethod
-    def _crear_cesion(empleado: DirectorMuseo, catalogo: Catalogo, 
-                      museos_externos: list[MuseoExterno]) -> None:
-        """Crea una nueva cesión para una obra del catálogo"""
+ 
 
-        input_titulo = input(
-            "\nIngrese el título de la obra para la cesión: "
-            )
-        obra = catalogo.buscar_obra(input_titulo)
-        if not obra:
-            print(f"\nObra '{input_titulo}' no encontrada.")
-            return
-        input_museo = input(
-            "\nIngrese el nombre del museo externo para la cesión: "
-            )
-        museo = None
-        for m in museos_externos:
-            if m.nombre.lower() == input_museo.lower():
-                museo = m
-                break
-        if not museo:
-            print(f"\nMuseo externo '{input_museo}' no encontrado.")
-            return
-
-
-        try:
-            importe = int(input("\nIngrese el importe de la cesión: "))
-            duracion_dias = int(
-                input("\nIngrese la duración de la cesión en días: ")
-                )
-        except ValueError:
-            print("\nValores invalidos. Por favor, ingrese números enteros.")
-            return
         
-        cesion = empleado.crear_cesion(obra, museo, importe, duracion_dias) 
-        print(f"\nSolicitud de Cesión creada: {cesion}")
-        print(f"\nEstado: {cesion.estado}")
-        
-        
+     
        

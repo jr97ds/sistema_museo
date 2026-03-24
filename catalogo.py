@@ -29,6 +29,20 @@ class Catalogo:
         for obra in self._obras:
             total += obra.valor 
         return total
+    
+    def mostrar_restauraciones(self) -> list:
+        organizadas = []
+        for obra in self.obras:
+            for restauracion in obra.restauraciones:
+                organizadas.append(restauracion)
+        return organizadas
+    
+    def mostrar_cesiones(self) -> list:
+        encontradas = []
+        for obra in self._obras:
+            for cesion in obra.cesiones:
+                encontradas.append(cesion)
+        return encontradas
 
 class Sala:
     """Clase para representar una sala del museo, que contiene obras."""
@@ -61,7 +75,7 @@ class Sala:
                 print(obra)
         else:
             print("No hay obras en exhibición en esta sala.")
-
+    
 
 class Pantalla: 
     """Clase para representar una pantalla que 
