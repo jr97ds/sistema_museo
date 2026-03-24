@@ -1,8 +1,12 @@
+from __future__ import annotations
 from abc import ABC
-from datetime import date, timedelta
-from catalogo import Catalogo
+from datetime import date
 from obras import Obra
 from tramites import Cesion, MuseoExterno, Restauracion
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from catalogo import Catalogo, Sala
 
 
 class UsuarioRegistrado(ABC):
@@ -45,7 +49,19 @@ class EncargadoCatalogo(Empleado):
                  usuario: str, contraseña: str):
         super().__init__(nombre, apellido, usuario, contraseña)
         self._cargo = "Encargado del Catálogo"
-        
+
+    def agregar_obra(self, catalogo: Catalogo, obra: Obra, sala: Sala) -> str:
+        catalogo.agregar_obra(obra)
+        sala.agregar_obra(obra)
+        return f"Obra '{obra.nombre}' agregada al catálogo y asignada a la sala '{sala.nombre}'."
+
+    def eliminar_obra(self, catalogo: Catalogo, titulo: str) -> str:
+        obra = catalogo.buscar_obra(titulo)
+        if not obra:
+            return f"Obra '{titulo}' no encontrada en el catálogo."
+        catalogo.eliminar_obra(obra)
+        return f"Obra '{obra.nombre}' eliminada del catálogo."
+
 class RestauradorJefe(Empleado):
     """Clase para representar un restaurador jefe"""
     def __init__(self, nombre: str, apellido: str, 
@@ -54,19 +70,19 @@ class RestauradorJefe(Empleado):
         self._cargo = "Restaurador Jefe"
 
     def enviar_a_restauracion(self, catalogo: Catalogo, titulo: str,
-                               tipo_restauracion: str) -> tuple[bool, str]:
+                               tipo_restauracion: str) -> str:
         obra_a_restaurar = catalogo.buscar_obra(titulo)
         if not obra_a_restaurar:
-            return (False, f"Obra '{titulo}' no encontrada en el catálogo.")
-        if obra_a_restaurar.estado == "En Restauración":
-            return (False, f"Obra '{titulo}' ya está en restauración.")
+            return (f"Obra '{titulo}' no encontrada en el catálogo.")
+        if obra_a_restaurar.estado == "En restauración":
+            return (f"Obra '{titulo}' ya está en restauración.")
         restauracion = Restauracion(obra_a_restaurar, date.today(), tipo_restauracion)
         obra_a_restaurar.agregar_restauracion(restauracion)
         obra_a_restaurar.estado = "En restauración"
-        return (True, f"Obra '{titulo}' enviada a restauración.")
+        return (f"Obra '{titulo}' enviada a restauración.")
 
     def finalizar_restauracion(self, catalogo: Catalogo, 
-                               titulo: str) -> tuple[bool, str]:
+                               titulo: str) -> str:
         obra_a_finalizar = catalogo.buscar_obra(titulo)
         
         if obra_a_finalizar:
@@ -75,15 +91,13 @@ class RestauradorJefe(Empleado):
                     if restauracion.estado == "En proceso":
                         restauracion.finalizar() 
                         obra_a_finalizar.estado = "En exhibición"
-                        return (True, f"Restauración de "
+                        return (f"Restauración de "
                                 f"'{obra_a_finalizar.titulo}' finalizada.")
             else:
-                return (False, f"Obra '{obra_a_finalizar.titulo}' "
+                return (f"Obra '{obra_a_finalizar.titulo}' "
                         f"no está en restauración.")
         else:
-                return (False, f"Obra '{titulo}' no encontrada")
-
-       
+                return (f"Obra '{titulo}' no encontrada")
 
 class DirectorMuseo(Empleado):
     """Clase para representar el director del museo"""

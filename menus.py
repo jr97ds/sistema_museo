@@ -49,80 +49,82 @@ class MenuEncargadoCatalogo(Menu):
     """Clase para representar el menú del encargado del catálogo"""
 
     def ejecutar(self) -> None:
-        catalogo = self._contexto["catalogo"]
-        salas = self._contexto["salas"]
         while True:
             print("\n¿Qué desea hacer?")
             print("1. Ver catálogo")
             print("2. Agregar obra al catálogo")
+            print("3. Eliminar obra del catálogo")
             print("0. Cerrar sesión")
             opcion_empleado_catalogo = seleccion_opcion()
             # Mostrar Catalogo
             if opcion_empleado_catalogo == "1":
-                catalogo.mostrar_obras()
+                self._contexto["catalogo"].mostrar_obras()
             # Agregar Producto
             elif opcion_empleado_catalogo == "2":
-                nueva_obra = self._crear_obra(catalogo, salas)
-                print("\nObra agregada al catálogo:")
-                print(nueva_obra) 
+                while True:
+                    print("\n¿Qué tipo de obra desea agregar?")
+                    print("1. Cuadro")
+                    print("2. Escultura")   
+                    print("3. Otro")
+                    tipo_obra = seleccion_opcion()
+                    if tipo_obra not in ["1", "2", "3"]:
+                        print("Opción no válida.")
+                        continue
+                    nombre = input("Nombre del cuadro: ")
+                    autor = input("Autor del cuadro: ")
+                    periodo = input("Periodo del cuadro: ")
+
+                    try:
+                        valor = int(input("Valor: "))
+                        fecha_creacion = date.fromisoformat(input(
+                            "Fecha de creación (YYYY-MM-DD): "))
+                    except ValueError: 
+                        print("\nValor o fecha no válidos. " \
+                        "Por favor, ingrese un número para el valor y " \
+                        "una fecha en formato YYYY-MM-DD.")
+                        continue
+
+                    fecha_entrada = date.today() # Fecha actual
+
+                    if tipo_obra == "1":
+                        tecnica = input("Técnica del cuadro: ")
+                        estilo = input("Estilo del cuadro: ")
+                        nueva_obra = Cuadro(nombre, autor, periodo, valor, 
+                                            fecha_creacion, fecha_entrada, 
+                                            tecnica, estilo)
+                            
+                    elif tipo_obra == "2":
+                        material = input("Material de la escultura: ")
+                        estilo = input("Estilo de la escultura: ")
+                        nueva_obra = Escultura(nombre, autor, periodo, valor, 
+                                                    fecha_creacion, fecha_entrada, 
+                                                    material, estilo)
+                    
+                    elif tipo_obra == "3":
+                        nueva_obra = Otro(nombre, autor, periodo, valor, 
+                                        fecha_creacion, fecha_entrada)
+                    else:
+                        no_valido()
+
+                    sala = asignar_sala(self._contexto["salas"])
+                    mensaje = self._empleado.agregar_obra( # type: ignore
+                        self._contexto["catalogo"], nueva_obra, sala
+                    )
+                    print(f"\n{mensaje}")
+                    break
+
+            # Eliminar Producto
+            elif opcion_empleado_catalogo == "3":
+                titulo = input("\nIngrese el título de la obra a eliminar: ")
+                mensaje = self._empleado.eliminar_obra( # type: ignore
+                    self._contexto["catalogo"], titulo
+                )
+                print(f"\n{mensaje}")
             # Cerrar Sesión de Empleado
             elif opcion_empleado_catalogo == "0":
                 break
             else:
                 no_valido()
-
-    def _crear_obra(self, catalogo: Catalogo,
-                     salas: list[Sala]) -> Optional[Obra]:
-        """Crear una nueva obra a partir de la entrada del usuario"""
-        while True:
-            print("\n¿Qué tipo de obra desea agregar?")
-            print("1. Cuadro")
-            print("2. Escultura")   
-            print("3. Otro")
-            tipo_obra = seleccion_opcion()
-            if tipo_obra not in ["1", "2", "3"]:
-                print("Opción no válida.")
-                continue
-            nombre = input("Nombre del cuadro: ")
-            autor = input("Autor del cuadro: ")
-            periodo = input("Periodo del cuadro: ")
-
-            try:
-                valor = int(input("Valor: "))
-                fecha_creacion = date.fromisoformat(input(
-                    "Fecha de creación (YYYY-MM-DD): "))
-            except ValueError: 
-                print("\nValor o fecha no válidos. " \
-                "Por favor, ingrese un número para el valor y " \
-                "una fecha en formato YYYY-MM-DD.")
-                return None
-
-            fecha_entrada = date.today() # Fecha actual
-
-            if tipo_obra == "1":
-                tecnica = input("Técnica del cuadro: ")
-                estilo = input("Estilo del cuadro: ")
-                nueva_obra = Cuadro(nombre, autor, periodo, valor, 
-                                    fecha_creacion, fecha_entrada, 
-                                    tecnica, estilo)
-                       
-            elif tipo_obra == "2":
-                material = input("Material de la escultura: ")
-                estilo = input("Estilo de la escultura: ")
-                nueva_obra = Escultura(nombre, autor, periodo, valor, 
-                                            fecha_creacion, fecha_entrada, 
-                                            material, estilo)
-            
-            elif tipo_obra == "3":
-                nueva_obra = Otro(nombre, autor, periodo, valor, 
-                                fecha_creacion, fecha_entrada)
-            else:
-                no_valido()
-
-            sala = asignar_sala(salas)
-            sala.agregar_obra(nueva_obra)
-            catalogo.agregar_obra(nueva_obra)
-            return nueva_obra
 
 
 class MenuRestauradorJefe(Menu):
@@ -159,7 +161,7 @@ class MenuRestauradorJefe(Menu):
                 tipo = input(
                     "\nIngrese el tipo de restauración (Automática o Manual): "
                     )
-                x, mensaje = self._empleado.enviar_a_restauracion(# type: ignore
+                mensaje = self._empleado.enviar_a_restauracion(# type: ignore
                     self._contexto["catalogo"], titulo, tipo
                     ) 
                 print(f"\n{mensaje}")
@@ -169,7 +171,7 @@ class MenuRestauradorJefe(Menu):
                 titulo_obra = input(
                     "\nIngrese el título de la obra a finalizar: "
                     )
-                x, mensaje = self._empleado.finalizar_restauracion( # type: ignore
+                mensaje = self._empleado.finalizar_restauracion( # type: ignore
                     self._contexto["catalogo"], titulo_obra
                     )
                 print(f"\n{mensaje}")

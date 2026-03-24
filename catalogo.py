@@ -18,6 +18,9 @@ class Catalogo:
     def agregar_obra(self, obra: Obra) -> None:
         self._obras.append(obra)
 
+    def eliminar_obra(self, obra: Obra) -> None:
+        self._obras.remove(obra)
+
     def buscar_obra(self, titulo: str):
         for obra in self._obras:
             if obra.titulo.lower() == titulo.lower():
