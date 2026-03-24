@@ -71,6 +71,11 @@ class Obra(ABC):
         
         self._estado = nuevo_estado
 
+    def agregar_cesion(self, cesion) -> None:
+        self._cesiones.append(cesion)
+    
+    def agregar_restauracion(self, restauracion) -> None:
+        self._restauraciones.append(restauracion)
 
 class Cuadro(Obra):
     """Clase para representar un cuadro, hereda de Obra."""
