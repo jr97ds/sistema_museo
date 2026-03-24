@@ -133,7 +133,7 @@ class MenuRestauradorJefe(Menu):
 
         while True:
             print("\n¿Qué desea hacer?")
-            print("1. Ver obras en exhibición")
+            print("1. Ver todas las obras")
             print("2. Ver restauraciónes")
             print("3. Enviar obra a restauración")
             print("4. Finalizar restauración")

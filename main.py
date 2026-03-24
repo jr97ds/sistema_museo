@@ -3,7 +3,7 @@ from auth import Auth
 from menus import Menu, no_valido, seleccion_opcion
 from obras import Cuadro, Escultura, Otro
 from catalogo import Catalogo, Pantalla, Sala
-from servicios_diarios import VerificarCesionesVencidas, RestauracionesAutomaticas
+from servicios_diarios import VerificarCesiones, RestauracionesAutomaticas
 from tramites import MuseoExterno
 from usuarios import EncargadoCatalogo , RestauradorJefe , DirectorMuseo
 from utils import no_valido, seleccion_opcion
@@ -67,7 +67,7 @@ def mostrar_menu_principal() -> None:
 # ----------------- INICIO DEL PROGRAMA ----------------- #
 
 # Procesos Diarios
-servicio_cesiones_vencidas = VerificarCesionesVencidas()
+servicio_cesiones_vencidas = VerificarCesiones()
 servicio_cesiones_vencidas.ejecutar(catalogo)
 servicio_restauraciones_por_edad = RestauracionesAutomaticas()
 servicio_restauraciones_por_edad.ejecutar(catalogo, restaurador_jefe)

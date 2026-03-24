@@ -75,9 +75,7 @@ class DirectorMuseo(Empleado):
                       importe: int, duracion_dias: int) -> Cesion:
         cesion = Cesion(obra, duracion_dias, museo_externo, importe)
         if obra.estado == "En exhibición":
-            cesion.estado = "Aprobada" 
-            cesion.fecha_inicio = date.today() 
-            cesion.fecha_fin = date.today() + timedelta(days=duracion_dias) 
+            cesion.aprobar(date.today()) 
             obra.estado = "En cesión"
         obra.agregar_cesion(cesion)
         return cesion

@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from datetime import date
+from datetime import date, timedelta
 from catalogo import Catalogo
 from usuarios import RestauradorJefe
 
@@ -12,19 +12,27 @@ class ServicioDiario(ABC):
         """Método abstracto para ejecutar el servicio diario"""
         pass
 
-class VerificarCesionesVencidas(ServicioDiario):
+class VerificarCesiones(ServicioDiario):
     """Servicio diario para verificar cesiones vencidas y actualizar estados"""
     def ejecutar(self, catalogo):
+        # Verificacion de cesiones vencidas y con cola
         hoy = date.today()
+        # Finalizar cesion vencida y poner obra en exhibicion
         for obra in catalogo.obras:
             for cesion in obra.cesiones:
                 if cesion.estado == "Aprobada" and cesion.fecha_fin < hoy:
                     cesion.estado = "Finalizada"
                     obra.estado = "En exhibición"
+            # Aprobar cesion pendiente si obra esta en exhibicion y cesion pendiente
+        if obra.estado == "En exhibición":
             for cesion_pendiente in obra.cesiones:
                 if cesion_pendiente.estado == "Pendiente":
                     cesion_pendiente.estado = "Aprobada"
                     obra.estado = "En cesión"
+                    cesion_pendiente.fecha_inicio = hoy
+                    cesion_pendiente.fecha_fin = hoy + timedelta(days=cesion_pendiente._duracion_dias)
+                    break
+
 
     # Restauracion si lleva 5 años sin restauracion, se hace de forma automatica
 

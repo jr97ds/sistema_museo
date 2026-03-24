@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from datetime import date
+from datetime import date, timedelta
 from obras import Obra
 
 class Tramite (ABC):
@@ -73,6 +73,10 @@ class Restauracion(Tramite):
     
     def detalles_especificos(self) -> str:
         return f"Tipo de Restauración: {self._tipo}"
+    
+    def finalizar(self) -> None:
+        self.estado = "Finalizada"
+        self.fecha_fin = date.today()
 
 class MuseoExterno():
     """Clase para representar un museo al que se le puede ceder una obra."""
@@ -93,7 +97,7 @@ class Cesion(Tramite):
                  museo_externo: MuseoExterno, importe: int):
         super().__init__(obra)
         self._duracion_dias = duracion_dias
-        self.estado = "Pendiente"
+        self._estado = "Pendiente"
         self._museo_externo = museo_externo
         self._importe = importe
     
@@ -109,5 +113,11 @@ class Cesion(Tramite):
         return (f"Museo: {self._museo_externo.nombre}, "
                 f"Duración (días): {self._duracion_dias}, "
                 f"Importe: {self._importe}")
+    
+    def aprobar(self, fecha_inicio: date) -> None:
+        self.estado = "Aprobada"
+        self.fecha_inicio = fecha_inicio
+        self.fecha_fin = fecha_inicio + timedelta(days=self._duracion_dias)
+
 
 
