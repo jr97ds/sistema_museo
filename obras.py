@@ -73,6 +73,7 @@ class Obra(ABC):
 
     def agregar_cesion(self, cesion) -> None:
         self._cesiones.append(cesion)
+        self._estado = "En cesión"
     
     def agregar_restauracion(self, restauracion) -> None:
         self._restauraciones.append(restauracion)

@@ -60,8 +60,7 @@ class RestauradorJefe(Empleado):
     def finalizar_restauracion(self, obra: Obra) -> None:
         for restauracion in obra.restauraciones:
             if restauracion.estado == "En proceso":
-                restauracion.estado = "Finalizada"
-                restauracion.fecha_fin = date.today()
+                restauracion.finalizar() 
                 obra.estado = "En exhibición"
                 return
 
