@@ -1,7 +1,7 @@
 from datetime import datetime, date
 
 from obras import Cuadro, Escultura, Otro
-from catalogo import Catalogo
+from catalogo import Catalogo, Sala
 from tramites import MuseoExterno
 from usuarios import EncargadoCatalogo , RestauradorJefe , DirectorMuseo
 
@@ -13,29 +13,38 @@ restaurador_jefe = RestauradorJefe("Maria", "Lopez", "restaurador", "1234")
 director_museo = DirectorMuseo("Carlos", "Perez", "director", "1234")
 empleados = [encargado_catalogo, restaurador_jefe, director_museo]
 
+# Datos precargados de museos externos para demostración
 museo1 = MuseoExterno("Museo de Arte Moderno")
 museo2 = MuseoExterno("Museo Nacional de Bellas Artes")
 museo3 = MuseoExterno("Museo de Arte Contemporáneo")
 museos_externos = [museo1, museo2, museo3]
 
+# Datos precargados de salas para demostración
+sala1 = Sala("Sala 1")
+sala2 = Sala("Sala 2")
+sala3 = Sala("Sala 3")
+salas = [sala1, sala2, sala3]
+
 # Datos precargados de obras para demostración
 cuadro1 = Cuadro("La Mona Lisa", "Leonardo da Vinci", "Renacimiento", 100,
-                 datetime(1503, 1, 1), datetime(1912, 1, 1), # type: ignore
-                 "Óleo sobre tabla", "Renacimiento")    
+                 date(1503, 1, 1), date(2023, 1, 1), # type: ignore
+                 "Óleo sobre tabla", "Renacimiento", sala1) # type: ignore 
 cuadro2 = Cuadro("La Noche Estrellada", "Vincent van Gogh", "Postimpresionismo"
-                , 9, datetime(1889, 1, 1), datetime(1956, 1, 1), # type: ignore
-                 "Óleo sobre lienzo", "Postimpresionismo")
+                , 9, date(1889, 1, 1), date(2022, 1, 1), # type: ignore
+                 "Óleo sobre lienzo", "Postimpresionismo", sala2) # type: ignore
 escultura1 = Escultura("La Piedad", "Miguel Ángel", "Renacimiento", 100,
-                     datetime(1498, 1, 1), datetime(1999, 1, 1), # type: ignore
-                     "Mármol", "Renacimiento")
+                     date(1498, 1, 1), date(2026, 1, 1), # type: ignore
+                     "Mármol", "Renacimiento", sala3) # type: ignore
 otro = Otro("Otra Obra", "Desconocido", "Contemporáneo", 700,
-             datetime(2000, 1, 1), datetime(2005, 1, 1)) # type: ignore
+             date(2000, 1, 1), date(2020, 1, 1), sala1) # type: ignore
 catalogo =Catalogo([cuadro1, cuadro2, escultura1, otro])
+
+
 
 def mostrar_menu_principal() -> None:
     print("\nBienvenido")
-    print("1. Soy un visitante")
-    print("2. Soy un empleado")
+    print("1. Ver Pantallas de Visitante")
+    print("2. Sistema de Empleados")
     print("0. Salir")
 
 def no_valido() -> None:
@@ -61,6 +70,18 @@ def seleccion_opcion() -> str:
     opcion = input("\nSeleccione una opción: ")
     return opcion
 
+def asignar_sala(salas) -> Sala:
+    for idx, sala in enumerate(salas):
+        print(f"{idx + 1}. {sala.nombre}")
+    while True:
+        opcion_sala = int(input("\nSeleccione la sala para la obra: "))
+        if 1 <= opcion_sala <= len(salas):
+            sala_seleccionada = salas[opcion_sala - 1]
+            return sala_seleccionada
+        else:
+            print("\nOpción de sala no válida.")
+            continue
+
 def crear_producto():
     while True:
         print("\n¿Qué tipo de obra desea agregar?")
@@ -80,8 +101,10 @@ def crear_producto():
             fecha_entrada = date.today() # Fecha actual
             tecnica = input("Técnica del cuadro: ")
             estilo = input("Estilo del cuadro: ")
+            sala = asignar_sala(salas) # type: ignore
             nuevo_cuadro = Cuadro(nombre, autor, periodo, valoracion, 
-                                fecha_creacion, fecha_entrada, tecnica, estilo)
+                                fecha_creacion, fecha_entrada, tecnica, estilo,sala) # type: ignore
+            sala.agregar_obra(nuevo_cuadro) # type: ignore
             return nuevo_cuadro
     
         elif tipo_obra == "2":
@@ -94,9 +117,11 @@ def crear_producto():
             fecha_entrada = date.today() # Fecha actual
             material = input("Material de la escultura: ")
             estilo = input("Estilo de la escultura: ")
+            sala = asignar_sala(salas) # type: ignore
             nueva_escultura = Escultura(nombre, autor, periodo, valoracion, 
                                         fecha_creacion, fecha_entrada, 
-                                        material, estilo)
+                                        material, estilo, sala) # type: ignore
+            sala.agregar_obra(nueva_escultura) # type: ignore
             return nueva_escultura
         
         elif tipo_obra == "3":
@@ -107,8 +132,10 @@ def crear_producto():
             fecha_creacion = date.fromisoformat(input(
                 "Fecha de creación (YYYY-MM-DD): "))
             fecha_entrada = date.today() # Fecha actual
+            sala = asignar_sala(salas) # type: ignore
             nueva_obra = Otro(nombre, autor, periodo, valoracion, 
-                            fecha_creacion, fecha_entrada)
+                            fecha_creacion, fecha_entrada,sala) # type: ignore
+            sala.agregar_obra(nueva_obra) # type: ignore
             return nueva_obra
         else:
             no_valido()
@@ -148,11 +175,22 @@ def verificar_cesiones_vencidas(catalogo: Catalogo) -> None:
             if cesion_pendiente.estado == "Pendiente":
                 cesion_pendiente.estado = "Aprobada" # type: ignore
                 obra.estado = "En cesión"
-
+# Restauracion si lleva 5 años sin restauracion, se hace de forma automatica
+def restauraciones_automaticas(catalogo: Catalogo) -> None:
+    hoy = date.today()
+    for obra in catalogo.obras:
+        if obra.estado == "En exhibición" and not obra.restauraciones:
+            if (hoy - obra.fecha_entrada).days >= 5 * 365: # type: ignore
+                restaurador_jefe.enviar_a_restauracion(obra, "Automática") # type: ignore
+        elif obra.estado == "En exhibición" and obra.restauraciones:
+                ultima_restauracion = obra.restauraciones[-1] # type: ignore
+                if (hoy - ultima_restauracion.fecha_inicio).days >= 5 * 365: # type: ignore
+                    restaurador_jefe.enviar_a_restauracion(obra, "Automática") # type: ignore
 # -------- INICIO DEL PROGRAMA --------
 
 # Procesos Diarios
 verificar_cesiones_vencidas(catalogo) 
+restauraciones_automaticas(catalogo)
 
 
 # Logica de seleccion de visitante/Empleado

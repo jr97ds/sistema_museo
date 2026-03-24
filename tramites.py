@@ -16,6 +16,16 @@ class Restauracion(Tramite):
         self._fecha_inicio = fecha_inicio
         self._estado = "En proceso"
         self._tipo = tipo  
+    
+    @property
+    def tipo(self):
+        return self._tipo
+    @property
+    def estado(self):
+        return self._estado
+    @property
+    def fecha_inicio(self):
+        return self._fecha_inicio
 
     def __str__(self) -> str:
         return (f"Restauración de '{self._obra.titulo}' - " 
