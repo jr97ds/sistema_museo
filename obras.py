@@ -53,6 +53,10 @@ class Obra(ABC):
     def estado(self, nuevo_estado):
         self._estado = nuevo_estado
 
+    @property
+    def sala(self):
+        return self._sala   
+
 class Cuadro(Obra):
     def __init__(self, nombre : str, autor : str, periodo : str,
                  valor : int, fecha_creacion : date, 

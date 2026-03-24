@@ -1,7 +1,7 @@
 from datetime import datetime, date
 
 from obras import Cuadro, Escultura, Otro
-from catalogo import Catalogo, Sala
+from catalogo import Catalogo, Pantalla, Sala
 from tramites import MuseoExterno
 from usuarios import EncargadoCatalogo , RestauradorJefe , DirectorMuseo
 
@@ -29,21 +29,29 @@ salas = [sala1, sala2, sala3]
 cuadro1 = Cuadro("La Mona Lisa", "Leonardo da Vinci", "Renacimiento", 100,
                  date(1503, 1, 1), date(2023, 1, 1), # type: ignore
                  "Óleo sobre tabla", "Renacimiento", sala1) # type: ignore 
+sala1.agregar_obra(cuadro1) # type: ignore
 cuadro2 = Cuadro("La Noche Estrellada", "Vincent van Gogh", "Postimpresionismo"
                 , 9, date(1889, 1, 1), date(2022, 1, 1), # type: ignore
                  "Óleo sobre lienzo", "Postimpresionismo", sala2) # type: ignore
+sala2.agregar_obra(cuadro2) # type: ignore
 escultura1 = Escultura("La Piedad", "Miguel Ángel", "Renacimiento", 100,
                      date(1498, 1, 1), date(2026, 1, 1), # type: ignore
                      "Mármol", "Renacimiento", sala3) # type: ignore
+sala3.agregar_obra(escultura1) # type: ignore
 otro = Otro("Otra Obra", "Desconocido", "Contemporáneo", 700,
              date(2000, 1, 1), date(2020, 1, 1), sala1) # type: ignore
+sala1.agregar_obra(otro) # type: ignore
 catalogo =Catalogo([cuadro1, cuadro2, escultura1, otro])
+
+
+# Datos precargados pantalla para demostración
+pantalla = Pantalla(salas)
 
 
 
 def mostrar_menu_principal() -> None:
     print("\nBienvenido")
-    print("1. Ver Pantallas de Visitante")
+    print("1. Ver Pantallas para visitantes")
     print("2. Sistema de Empleados")
     print("0. Salir")
 
@@ -200,9 +208,8 @@ while True:
     
     # Ruta para visitantes
     if opcion == "1":
-        print("\nBienvenido Visitante")
-
-        # OJO PENDIENTE -----------
+        pantalla.mostrar_salas()
+        input("\nPresione Enter para volver al menú principal...")
 
 
     # Ruta para empleados

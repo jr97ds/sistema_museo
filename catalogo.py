@@ -41,8 +41,22 @@ class Sala:
     def agregar_obra(self, obra) -> None:
         self._obras.append(obra)
     
+    def mostrar_obras(self) -> None:
+        print(f"\n Sala '{self._nombre}':")
+        if self._obras:
+            for obra in self._obras:
+                if obra.estado == "En exhibición":
+                    print(obra)
+        else:
+            print("No hay obras en esta sala.")
+            return
+       
 
 
 class Pantalla: 
-    def __init__(self,):
-        pass
+    def __init__(self,salas : list):
+        self._salas = salas
+    
+    def mostrar_salas(self) -> None:
+        for sala in self._salas:
+            sala.mostrar_obras()
