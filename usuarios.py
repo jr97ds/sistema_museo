@@ -52,7 +52,8 @@ class RestauradorJefe(Empleado):
         super().__init__(nombre, apellido, usuario, contraseña)
         self._cargo = "Restaurador Jefe"
 
-    def enviar_a_restauracion(self, obra: Obra, tipo_restauracion: str) -> None:
+    def enviar_a_restauracion(self, obra: Obra,
+                               tipo_restauracion: str) -> None:
         restauracion = Restauracion(obra, date.today(), tipo_restauracion)
         obra.agregar_restauracion(restauracion)
         obra.estado = "En restauración"
